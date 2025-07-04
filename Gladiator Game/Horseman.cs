@@ -1,8 +1,13 @@
-﻿namespace Gladiator_Game;
+namespace Gladiator_Game;
 
 public class Horseman : Warrior
 {
-    public Horseman (int health, int damage, int defense, int agility) : base(health, damage, defense, agility)
+    public Horseman() : base(
+        health: 100,
+        minDamage: 20,
+        maxDamage: 35,
+        defense: 30,
+        agility: new Random().Next(0, 5))
     {
     }
 }
