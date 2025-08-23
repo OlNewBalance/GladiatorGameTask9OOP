@@ -1,0 +1,6 @@
+namespace Gladiator_Game;
+
+public class Backstage
+{
+    public BattleChronicle battleChronicle = new BattleChronicle();
+}
