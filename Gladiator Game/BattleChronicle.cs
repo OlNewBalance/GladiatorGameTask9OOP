@@ -5,10 +5,10 @@ namespace Gladiator_Game
 {
     public class BattleChronicle
     {
-        public static readonly List<string> battleLog = new List<string>();
-        private static int turnCounter = 0;
+        public readonly List<string> battleLog = new List<string>();
+        private int turnCounter = 0;
 
-        public static void LogAction(string action)
+        public void LogAction(string action)
         {
             turnCounter++;
             battleLog.Add($"{turnCounter}. {action}");
