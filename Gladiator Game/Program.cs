@@ -2,15 +2,9 @@ using System;
 using System.Collections.Generic;
 namespace Gladiator_Game
 {
-    //var enemy = new ____();
-    //var hero = new ____();
-    //var enemy = new Spearman();
-    //var hero = new Horseman();
-    //hero.Damaging(enemy);
-    //enemy.Damaging(hero);
+
     internal class Program
     {
-
         private static readonly Random random = new Random();
         public static void Main()
         {
@@ -104,6 +98,8 @@ namespace Gladiator_Game
 
         private static void StartBattle(Warrior hero, Warrior enemy) // Здесь реализация боя
         {
+            Backstage backstage = new Backstage();
+            
             Console.Clear();
             Console.WriteLine(
                 "\n///////////////////////////////////////////////////////////////////////////////////////////////////" +
@@ -140,17 +136,17 @@ namespace Gladiator_Game
                             hero.Damaging(enemy);
                             bool isAttacked = true;
                             playerHasActed = true;
-                            BattleChronicle.LogAction("Игрок нанес противнику урон.");
+                            backstage.battleChronicle.LogAction("Игрок нанес противнику урон.");
                             break;
                         case ConsoleKey.D2:
                             hero.Healing(hero);
                             playerHasActed = true;
-                            BattleChronicle.LogAction("Игрок вылечил себя.");
+                            backstage.battleChronicle.LogAction("Игрок вылечил себя.");
                             break;
                         case ConsoleKey.D3:
                             hero.Speak(enemy);
                             playerHasActed = true;
-                            BattleChronicle.LogAction("Игрок деморализовал противника.");
+                            backstage.battleChronicle.LogAction("Игрок деморализовал противника.");
                             break;
                         default:
                             Console.WriteLine("Неверный выбор!");
@@ -179,24 +175,24 @@ namespace Gladiator_Game
                     {
                         Console.WriteLine("Противник атаковал вас!");
                         enemy.Damaging(hero);
-                        BattleChronicle.LogAction("Противник нанес противнику урон.");
+                        backstage.battleChronicle.LogAction("Противник нанес противнику урон.");
                     }
                     else if (enemyTurnRoll <= 3) //30%
                     {
                         Console.WriteLine("Противник вылечил себя!");
                         enemy.Healing(enemy);
-                        BattleChronicle.LogAction("Противник вылечил себя.");
+                        backstage.battleChronicle.LogAction("Противник вылечил себя.");
                     }
                     else if (enemyTurnRoll <= 2) //20%
                     {
                         Console.WriteLine("Противник приоткрыл рот...");
                         enemy.Speak(hero);
-                        BattleChronicle.LogAction("Противник деморализовал игрока.");
+                        backstage.battleChronicle.LogAction("Противник деморализовал игрока.");
                     }
                     else //остальное
                     {
                         Console.WriteLine("Противник забуксовал...");
-                        BattleChronicle.LogAction("Противник забуксовал...");
+                        backstage.battleChronicle.LogAction("Противник забуксовал...");
                     }
                 }
 
@@ -223,18 +219,20 @@ namespace Gladiator_Game
         }
         public static void ShowBattleChronicle()
         {
+            Backstage backstage = new Backstage();
+            
             Console.Clear();
             Console.WriteLine("╔════════════════════════════╗");
             Console.WriteLine("║   Хроника последнего боя   ║");
             Console.WriteLine("╚════════════════════════════╝\n");
 
-            if (BattleChronicle.battleLog.Count == 0)
+            if (backstage.battleChronicle.battleLog.Count == 0)
             {
                 Console.WriteLine("Бой еще не начался!");
                 return;
             }
 
-            foreach (var entry in BattleChronicle.battleLog)
+            foreach (var entry in backstage.battleChronicle.battleLog)
             {
                 Console.WriteLine(entry);
             }
