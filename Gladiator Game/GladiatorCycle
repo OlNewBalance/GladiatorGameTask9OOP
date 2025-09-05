@@ -1,0 +1,240 @@
+namespace Gladiator_Game;
+
+public class GladiatorCycle
+{
+    private static readonly Random random = new Random();
+        public void Start()
+        {
+            Console.WriteLine(
+                "\n/////////////////////////////////////////////////////////////////////////////////////////////////" +
+                "///////////////////////////////////////////////////////////////////////////////////");
+            Console.WriteLine(
+                "                                                                               Gladiator Game");
+            Console.WriteLine(
+                "//////////////////////////////////////////////////////////////////////////////////////////////////" +
+                "//////////////////////////////////////////////////////////////////////////////////");
+            Console.WriteLine("Gladiator Game");
+            Console.WriteLine("Чтобы начать, нажмите ENTER...");
+            string input = Console.ReadLine();
+            while (input == "")
+            {
+                Console.Clear();
+                Console.WriteLine("\nМеню.");
+                Console.WriteLine("\n+ 1. Играть.");
+                Console.WriteLine("\n+ 2. Просмотреть бой.");
+                Console.WriteLine("\n+ 3. Выход.");
+                ConsoleKeyInfo keyInfo = Console.ReadKey(true);
+                switch (keyInfo.Key)
+                {
+                    case ConsoleKey.D1:
+                        CharCreation();
+                        break;
+                    case ConsoleKey.D2:
+                        ShowBattleChronicle();
+                        break;
+                    case ConsoleKey.D3:
+                        Environment.Exit(0);
+                        break;
+                    default:
+                        Console.WriteLine("Неверный выбор!");
+                        break;
+                }
+            }
+        }
+
+        private void CharCreation()
+        {
+            while (true)
+            {
+                Console.Clear();
+                Console.WriteLine($"\nДобро пожаловать! Выберите своего воина и воина врага..."
+                                  + "введите сначала воина героя, затем противника");
+                Console.WriteLine("Воины:");
+                Console.WriteLine("+ Infantryman (пехотинец). DD: Damage 10-20, Defense 20");
+                Console.WriteLine("+ Spearman (копейщик). DD: Damage 5-35, Defense 0");
+                Console.WriteLine("+ Knight (рыцарь). DD: Damage 20-50, Defense 60");
+                Console.WriteLine("+ Skirmisher (застрельщик). DD: Damage 5-30, Defense 0");
+                Console.WriteLine("+ Horseman (наездник). DD: Damage 20-35, Defense 30");
+                Console.Write("Ввод: ");
+                string input = Console.ReadLine();
+                string[] parts = input.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length == 2)
+                {
+                    Warrior hero = CreateWarrior(parts[0]);
+                    Warrior enemy = CreateWarrior(parts[1]);
+                    if (hero != null && enemy != null)
+                    {
+                        Console.WriteLine(
+                            $"\nСозданы воины: Герой - {hero.GetType().Name}, Враг - {enemy.GetType().Name}");
+                        // Здесь можно начать бой
+                        StartBattle(hero, enemy);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Ошибка: введены некорректные названия воинов");
+                    }
+                }
+            }
+        }
+
+        private Warrior CreateWarrior(string warriorType)
+        {
+            // Приводим к нижнему регистру для удобства сравнения
+            string type = warriorType.Trim().ToLower();
+
+            return type switch
+            {
+                "infantryman" or "пехотинец" => new Infantryman(),
+                "spearman" or "копейщик" => new Spearman(),
+                "knight" or "рыцарь" => new Knight(),
+                "skirmisher" or "застрельщик" => new Skirmisher(),
+                "horseman" or "наездник" => new Horseman(),
+                _ => null
+            };
+        }
+
+        private void StartBattle(Warrior hero, Warrior enemy) // Здесь реализация боя
+        {
+            Backstage backstage = new Backstage();
+            
+            Console.Clear();
+            Console.WriteLine(
+                "\n///////////////////////////////////////////////////////////////////////////////////////////////////" +
+                "/////////////////////////////////////////////////////////////////////////////////");
+            Console.WriteLine("                                                                                  Игра");
+            Console.WriteLine(
+                "//////////////////////////////////////////////////////////////////////////////////////////////////////" +
+                "//////////////////////////////////////////////////////////////////////////////");
+            Console.WriteLine("\n\nСвист и гул толпы собравшейся посмотреть на турнир шли со всех сторон..."
+                              + "В воздухе чувствуются торжественность, и нотка напряжённости..."
+                              + "На высокой трибуне стоял Король со своей свитой, полные предвкушения зрелища..."
+                              + "И вот, Корль дает взмах рукой, как сигнал, что пора начинать..."
+                              + "Королевский глашатай, под гул труб объявляет...");
+            Console.WriteLine("\nТурнир начинается!!");
+            while (hero.Health > 0 && enemy.Health > 0)
+            {
+                bool playerHasActed = false; // Флаг хода
+                
+                while (hero.Health > 0 && enemy.Health > 0 && !playerHasActed) // Чат помог с созданием логики ходов.
+                {
+                    Console.WriteLine(
+                        "\n//////////////////////////////////////////////////////////////////////////////////////////" +
+                        "//////////////////////////////////////////////////////////////////////////////////////////");
+                    Console.WriteLine("\n\nВаш ход.");
+                    Console.WriteLine($"\nСостояние вашего здоровья - {hero.Health}, врага - {enemy.Health}");
+                    Console.WriteLine("Действия:");
+                    Console.WriteLine("\n+ 1. Атака.");
+                    Console.WriteLine("\n+ 2. Лечение.");
+                    Console.WriteLine("\n+ 3. Диалог.");
+                    ConsoleKeyInfo keyInfo = Console.ReadKey(true); // true - чтобы клавиша не отображалась
+                    switch (keyInfo.Key)
+                    {
+                        case ConsoleKey.D1:
+                            hero.Damaging(enemy);
+                            bool isAttacked = true;
+                            playerHasActed = true;
+                            backstage.battleChronicle.LogAction("Игрок нанес противнику урон.");
+                            break;
+                        case ConsoleKey.D2:
+                            hero.Healing(hero);
+                            playerHasActed = true;
+                            backstage.battleChronicle.LogAction("Игрок вылечил себя.");
+                            break;
+                        case ConsoleKey.D3:
+                            hero.Speak(enemy);
+                            playerHasActed = true;
+                            backstage.battleChronicle.LogAction("Игрок деморализовал противника.");
+                            break;
+                        default:
+                            Console.WriteLine("Неверный выбор!");
+                            playerHasActed = false;
+                            break;
+                    }
+
+                    if (playerHasActed)
+                    {
+                        Console.WriteLine("Нажмите любую клавишу для продолжения...");
+                        Console.ReadKey(true);
+                    }
+                }
+
+                if (hero.Health > 0 && enemy.Health > 0)
+                {
+                    Console.Clear();
+                    Console.WriteLine(
+                        "\n//////////////////////////////////////////////////////////////////////////////////////////" +
+                        "//////////////////////////////////////////////////////////////////////////////////////////");
+                    Console.WriteLine("\nХод противника.");
+                    int enemyTurnRoll = random.Next(1, 11);
+                    
+                    
+                    if (enemyTurnRoll <= 5) //50%
+                    {
+                        Console.WriteLine("Противник атаковал вас!");
+                        enemy.Damaging(hero);
+                        backstage.battleChronicle.LogAction("Противник нанес противнику урон.");
+                    }
+                    else if (enemyTurnRoll <= 3) //30%
+                    {
+                        Console.WriteLine("Противник вылечил себя!");
+                        enemy.Healing(enemy);
+                        backstage.battleChronicle.LogAction("Противник вылечил себя.");
+                    }
+                    else if (enemyTurnRoll <= 2) //20%
+                    {
+                        Console.WriteLine("Противник приоткрыл рот...");
+                        enemy.Speak(hero);
+                        backstage.battleChronicle.LogAction("Противник деморализовал игрока.");
+                    }
+                    else //остальное
+                    {
+                        Console.WriteLine("Противник забуксовал...");
+                        backstage.battleChronicle.LogAction("Противник забуксовал...");
+                    }
+                }
+
+                if (hero.Health <= 0)
+                {
+                    Console.Clear();
+                    Console.WriteLine("Вы проиграли!");
+                    Console.WriteLine(
+                        "Льётся кровь из рта твоего, и только соперник твой стоит, и с победоносною ухмылкою" +
+                        "уходит в глаз твоих сокрытых, полутьму...");
+                    Start();
+                }
+
+                if (enemy.Health <= 0)
+                {
+                    Console.Clear();
+                    Console.WriteLine("Победа за вами!");
+                    Console.WriteLine(
+                        "Кровь твоего соперника стекает по брусчатке, твой конь в усталости фырчит, и под " +
+                        "страстный гул аплодисментов, идёшь ты к солнцу, до зари...");
+                    Start();
+                }
+            }
+        }
+        public void ShowBattleChronicle()
+        {
+            Backstage backstage = new Backstage();
+            
+            Console.Clear();
+            Console.WriteLine("╔════════════════════════════╗");
+            Console.WriteLine("║   Хроника последнего боя   ║");
+            Console.WriteLine("╚════════════════════════════╝\n");
+
+            if (backstage.battleChronicle.battleLog.Count == 0)
+            {
+                Console.WriteLine("Бой еще не начался!");
+                return;
+            }
+
+            foreach (var entry in backstage.battleChronicle.battleLog)
+            {
+                Console.WriteLine(entry);
+            }
+
+            Console.WriteLine("\nНажмите любую клавишу чтобы продолжить...");
+            Console.ReadKey();
+        }
+}
